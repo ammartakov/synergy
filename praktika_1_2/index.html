@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Счетчик | Интерактивный компонент</title>
+    <style>
+        /* Сброс базовых отступов */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            /* Фон - линейный градиент */
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            font-family: system-ui, 'Segoe UI', 'Roboto', sans-serif;
+            
+            /* Центровка контейнера */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Главный блок счетчика */
+        .counter-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(4px);
+            border-radius: 32px;
+            padding: 40px 30px;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            min-width: 320px;
+            transition: all 0.2s ease;
+        }
+
+        /* Окошко результата */
+        .result-display {
+            font-size: 5rem;
+            font-weight: 800;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 24px;
+            background: #f5f5f5;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05), 0 5px 15px rgba(0,0,0,0.1);
+            transition: background-color 0.25s ease, transform 0.1s ease;
+            letter-spacing: 2px;
+        }
+
+        /* Блок кнопок */
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        /* Общие стили для кнопок */
+        button {
+            font-size: 2rem;
+            font-weight: bold;
+            width: 80px;
+            padding: 12px 0;
+            border: none;
+            border-radius: 5px; /* радиальное скругление 5px */
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: linear-gradient(145deg, #f0f0f0, #d6d6d6);
+            color: #1e2a3e;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Градиент для кнопок (основной) */
+        button:active:not(:disabled) {
+            transform: scale(0.96);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        /* Стиль активных кнопок (градиент) */
+        button:enabled {
+            background: linear-gradient(145deg, #ffe6b0, #ffb347);
+            color: #2c3e2f;
+        }
+
+        /* Неактивные кнопки (серый градиент) */
+        button:disabled {
+            background: linear-gradient(145deg, #bdbdbd, #9e9e9e);
+            color: #4a4a4a;
+            cursor: not-allowed;
+            opacity: 0.7;
+            transform: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* Доп. ховер для активных кнопок */
+        button:enabled:hover {
+            filter: brightness(1.05);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+        }
+
+        /* Новое окно для экстремального сообщения */
+        .extreme-message {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            padding: 12px;
+            border-radius: 40px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            color: #fff3c9;
+            text-align: center;
+            min-height: 65px;
+            transition: all 0.2s ease;
+            letter-spacing: 0.3px;
+        }
+
+        /* Стиль для текста предупреждения */
+        .warning-text {
+            color: #ffd966;
+            text-shadow: 0 0 2px black;
+            font-weight: bold;
+            animation: subtlePulse 1s infinite;
+        }
+
+        @keyframes subtlePulse {
+            0% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        /* Адаптация под маленькие экраны */
+        @media (max-width: 450px) {
+            .counter-container {
+                min-width: 280px;
+                padding: 25px 20px;
+            }
+            .result-display {
+                font-size: 3.5rem;
+            }
+            button {
+                width: 70px;
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="counter-container">
+        <!-- Окошко результата -->
+        <div class="result-display" id="counterValue">0</div>
+        
+        <!-- Кнопки управления -->
+        <div class="buttons">
+            <button id="decrementBtn" aria-label="Уменьшить">−</button>
+            <button id="incrementBtn" aria-label="Увеличить">+</button>
+        </div>
+
+        <!-- Дополнительное окно для сообщения об экстремальных значениях -->
+        <div class="extreme-message" id="extremeMessage"></div>
+    </div>
+
+    <script>
+        // Получаем ссылки на DOM-элементы
+        const counterDisplay = document.getElementById('counterValue');
+        const decrementBtn = document.getElementById('decrementBtn');
+        const incrementBtn = document.getElementById('incrementBtn');
+        const extremeMsgDiv = document.getElementById('extremeMessage');
+
+        // Текущее значение счетчика
+        let counter = 0;
+
+        // Функция для обновления интерфейса: цвет фона результата, состояние кнопок, сообщение
+        function updateUI() {
+            // 1. Обновляем отображение числа в окошке результата
+            counterDisplay.textContent = counter;
+
+            // 2. Меняем фон результата в зависимости от значения
+            if (counter > 0) {
+                counterDisplay.style.backgroundColor = '#ffeb3b'; // жёлтый
+                counterDisplay.style.color = '#1f2a1b';
+            } else if (counter < 0) {
+                counterDisplay.style.backgroundColor = '#4caf50'; // зелёный
+                counterDisplay.style.color = 'white';
+            } else { // counter === 0
+                counterDisplay.style.backgroundColor = '#f44336'; // красный
+                counterDisplay.style.color = 'white';
+            }
+
+            // 3. Управление активностью кнопок
+            // Кнопка "плюс" неактивна при значении 10
+            if (counter >= 10) {
+                incrementBtn.disabled = true;
+            } else {
+                incrementBtn.disabled = false;
+            }
+            
+            // Кнопка "минус" неактивна при значении -10
+            if (counter <= -10) {
+                decrementBtn.disabled = true;
+            } else {
+                decrementBtn.disabled = false;
+            }
+
+            // 4. Отображение надписи в дополнительном окне при достижении ±10
+            if (counter === 10 || counter === -10) {
+                extremeMsgDiv.innerHTML = '<span class="warning-text">⚠️ Вы достигли экстремального значения ⚠️</span>';
+                extremeMsgDiv.style.background = "rgba(0,0,0,0.75)";
+            } else {
+                extremeMsgDiv.innerHTML = ''; // очищаем сообщение
+                extremeMsgDiv.style.background = "rgba(0, 0, 0, 0.6)";
+            }
+        }
+
+        // Функция увеличения значения (плюс)
+        function increment() {
+            // Если кнопка активна (значение меньше 10)
+            if (counter < 10) {
+                counter++;
+                updateUI();
+            }
+        }
+
+        // Функция уменьшения значения (минус)
+        function decrement() {
+            // Если кнопка активна (значение больше -10)
+            if (counter > -10) {
+                counter--;
+                updateUI();
+            }
+        }
+
+        // Добавляем слушателей событий через addEventListener (vanilla JS)
+        incrementBtn.addEventListener('click', increment);
+        decrementBtn.addEventListener('click', decrement);
+
+        // Инициализация UI при загрузке страницы (чтобы применить начальные стили и состояния)
+        updateUI();
+    </script>
+</body>
+</html>

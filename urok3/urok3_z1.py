@@ -1,0 +1,7 @@
+print('Введите вид питомца')
+pet_type = input()
+print('Введите возвраст питомца')
+age = int(input())
+print('Введите кличку питомца')
+nicname = input()
+print(f'Это {pet_type} по кличке {nicname}. Возраст: {age} года.')
