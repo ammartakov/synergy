@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Интерактивный калькулятор | Математические операции</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="calculator">
+        <h1>Интерактивный калькулятор</h1>
+        <div class="sub">два числа → любое действие → результат</div>
+
+        <!-- Поля ввода -->
+        <div class="input-group">
+            <div class="input-field">
+                <label>ЧИСЛО A</label>
+                <input type="text" id="inputA" placeholder="например, 12" value="12">
+            </div>
+            <div class="input-field">
+                <label>ЧИСЛО B</label>
+                <input type="text" id="inputB" placeholder="например, 4" value="4">
+            </div>
+        </div>
+
+        <!-- 4 кнопки с математическими операциями -->
+        <div class="buttons-grid">
+            <button class="action-btn" data-op="sum" id="btnSum">➕ Сумма</button>
+            <button class="action-btn" data-op="diff" id="btnDiff">➖ Разность</button>
+            <button class="action-btn" data-op="prod" id="btnProd">✖️ Произведение</button>
+            <button class="action-btn" data-op="div" id="btnDiv">➗ Деление</button>
+        </div>
+
+        <!-- Окно вывода результата -->
+        <div class="result-area">
+            <div class="result-label">📋 РЕЗУЛЬТАТ</div>
+            <div class="result-value" id="resultDisplay">—</div>
+        </div>
+        <footer>введите числа | поддерживаются дробные значения</footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

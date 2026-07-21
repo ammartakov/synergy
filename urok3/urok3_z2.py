@@ -1,0 +1,13 @@
+#Астралопитек, Человек умелый, Человек прямоходящий, Человек неандертальский, Человек разумный
+print('Введите этапы развития человека')
+print('Этап 1')
+stage1 = input()
+print('Этап 2')
+stage2 = input()
+print('Этап 3')
+stage3 = input()
+print('Этап 4')
+stage4 = input()
+print('Этап 5')
+stage5 = input()
+print(stage1, stage2, stage3, stage4, stage5, sep=' => ')
